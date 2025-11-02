@@ -1,11 +1,12 @@
 import { useState } from "react";
 import "./App.css";
 import type { Message } from "./components/Chat";
-import Chat from "./components/Chat";
+import ChatClient from "./components/Client";
 
 function App() {
     const restUser: string = "Alice";
     const wsUser: string = "Alice";
+
     const [messages1, setMessages1] = useState<Message[]>([
         { sender: "Alice", message: "Hello!" },
         { sender: "me", message: "Hi Alice, how are you?" },
@@ -21,6 +22,7 @@ function App() {
     return (
         <div className="App" style={{ padding: "1rem" }}>
             <h1>Chats</h1>
+
             <div
                 style={{
                     display: "flex",
@@ -29,15 +31,17 @@ function App() {
                     alignItems: "flex-start",
                 }}
             >
-                <div style={{ flex: 1 }}>
-                    <h2>REST Client</h2>
-                    <Chat messages={messages1} currentUser={restUser} />
-                </div>
+                <ChatClient
+                    title="REST Client"
+                    messages={messages1}
+                    currentUser={restUser}
+                />
 
-                <div style={{ flex: 1 }}>
-                    <h2>Websocket Client</h2>
-                    <Chat messages={messages2} currentUser={wsUser} />
-                </div>
+                <ChatClient
+                    title="WebSocket Client"
+                    messages={messages2}
+                    currentUser={wsUser}
+                />
             </div>
         </div>
     );
