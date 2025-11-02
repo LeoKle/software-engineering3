@@ -1,0 +1,1 @@
+run server: ```uv run uvicorn src.app:app --reload```
