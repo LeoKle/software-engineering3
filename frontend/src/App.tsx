@@ -1,15 +1,22 @@
 import { useState } from 'react'
 import './App.css'
-import { Button } from 'primereact/button'
+import type { Message } from './components/Chat';
+import Chat from './components/Chat';
+
 
 function App() {
-    const [count, setCount] = useState(0)
+    const [messages, setMessages] = useState<Message[]>([
+        { sender: "Alice", message: "Hello!" },
+        { sender: "me", message: "Hi Alice, how are you?" },
+        { sender: "Alice", message: "I'm good, thanks!" },
+    ]);
 
     return (
-        <>
-            <Button></Button>
-        </>
-    )
+        <div className="App">
+            <h1>Chat</h1>
+            <Chat messages={messages} currentUser="Alice" />
+        </div>
+    );
 }
 
 export default App
