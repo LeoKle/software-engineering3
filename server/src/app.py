@@ -1,31 +1,26 @@
-import asyncio
-
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from pydantic import BaseModel
+import asyncio
 
 app = FastAPI()
 
-
-class Message:
+class Message(BaseModel):
     sender: str
     message: str
 
-
-messages: list[str] = []
+messages: list[Message] = []
 connections: list[WebSocket] = []
 
 
 @app.get("/messages")
 async def get_messages():
-    return {"messages": messages}
+    return {"messages": [m.model_dump() for m in messages]}
 
 
 @app.post("/messages")
-async def post_message(payload: dict):
-    msg = payload.get("message")
-    if msg:
-        messages.append(msg)
-        # push the message to all connected WebSocket clients
-        await broadcast(msg)
+async def post_message(payload: Message):
+    messages.append(payload)
+    await broadcast(f"{payload.sender}: {payload.message}")
     return {"message": "Message added"}
 
 
@@ -34,18 +29,15 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     connections.append(websocket)
     try:
-        # Optionally send all existing messages on connect
         for msg in messages:
-            await websocket.send_text(msg)
+            await websocket.send_text(f"{msg.sender}: {msg.message}")
         while True:
-            # keep connection alive
             await asyncio.sleep(1)
     except WebSocketDisconnect:
         connections.remove(websocket)
 
 
 async def broadcast(message: str):
-    """Send message to all connected websockets"""
     for connection in connections:
         try:
             await connection.send_text(message)
