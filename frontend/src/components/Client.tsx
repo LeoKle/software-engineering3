@@ -1,5 +1,6 @@
 import React from "react";
-import Chat, { type Message } from "./Chat";
+import Chat from "./Chat";
+import type { Message } from "../types/message";
 
 interface ChatClientProps {
     title: string;

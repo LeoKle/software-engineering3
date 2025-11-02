@@ -3,11 +3,7 @@ import { classNames } from "primereact/utils";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-
-export interface Message {
-    sender: string;
-    message: string;
-}
+import type { Message } from "../types/message";
 
 interface ChatProps {
     messages: Message[];

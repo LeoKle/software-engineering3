@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-import type { Message } from "./components/Chat";
 import ChatClient from "./components/Client";
+import type { Message } from "./types/message";
 
 function App() {
     const restUser: string = "Alice";
