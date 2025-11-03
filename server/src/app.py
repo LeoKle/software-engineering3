@@ -42,19 +42,20 @@ async def websocket_endpoint(websocket: WebSocket):
     connections.append(websocket)
     try:
         for msg in messages:
-            await websocket.send_text(f"{msg.sender}: {msg.message}")
+            await websocket.send_text(msg)
         while True:
             raw_text = await websocket.receive_text()
             data = json.loads(raw_text)
-            messages.append(Message(sender=data["sender"], message=data["message"]))
-            await websocket.send_text("Message received!")
+            msg = Message(sender=data["sender"], message=data["message"])
+            messages.append(msg)
+            await broadcast(msg)
     except WebSocketDisconnect:
         connections.remove(websocket)
 
 
-async def broadcast(message: str):
+async def broadcast(message: Message):
     for connection in connections:
         try:
-            await connection.send_text(message)
+            await connection.send_text(message.model_dump_json())
         except:
             connections.remove(connection)
