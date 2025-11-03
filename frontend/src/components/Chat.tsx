@@ -1,8 +1,4 @@
 import React from "react";
-import { classNames } from "primereact/utils";
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
 import type { Message } from "../types/message";
 
 interface ChatProps {
@@ -12,35 +8,44 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ messages, currentUser }) => {
     return (
-        <div style={{ maxHeight: "400px", overflowY: "auto", padding: "1rem" }}>
+        <div
+            style={{
+                minWidth: "300px",
+                maxHeight: "400px",
+                overflowY: "auto",
+                padding: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+            }}
+        >
             {messages.map((msg, index) => {
                 const isCurrentUser = msg.sender === currentUser;
+
                 return (
                     <div
                         key={index}
-                        className={classNames("p-mb-3 d-flex", {
-                            "justify-content-end": isCurrentUser,
-                            "justify-content-start": !isCurrentUser,
-                        })}
+                        style={{
+                            display: "flex",
+                            justifyContent: isCurrentUser ? "flex-end" : "flex-start",
+                        }}
                     >
                         <div
-                            className={classNames("p-d-inline-block p-p-3", {
-                                "bg-blue-500 text-white": isCurrentUser,
-                                "bg-gray-200 text-black": !isCurrentUser,
-                            })}
                             style={{
+                                backgroundColor: isCurrentUser ? "#3b82f6" : "#e5e7eb",
+                                color: isCurrentUser ? "white" : "black",
+                                padding: "0.75rem 1rem",
                                 borderRadius: isCurrentUser
                                     ? "15px 15px 0 15px"
                                     : "15px 15px 15px 0",
                                 maxWidth: "70%",
+                                wordBreak: "break-word",
                                 boxShadow: isCurrentUser
                                     ? "0 2px 8px rgba(0,0,0,0.2)"
                                     : "none",
                             }}
                         >
-                            {!isCurrentUser && (
-                                <strong>{msg.sender}: </strong>
-                            )}
+                            {!isCurrentUser && <strong>{msg.sender}: </strong>}
                             {msg.message}
                         </div>
                     </div>
