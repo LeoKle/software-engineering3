@@ -32,7 +32,7 @@ async def get_messages():
 @app.post("/messages")
 async def post_message(payload: Message):
     messages.append(payload)
-    await broadcast(f"{payload.sender}: {payload.message}")
+    await broadcast(payload)
     return {"message": "Message added"}
 
 
@@ -42,7 +42,7 @@ async def websocket_endpoint(websocket: WebSocket):
     connections.append(websocket)
     try:
         for msg in messages:
-            await websocket.send_text(msg)
+            await websocket.send_text(msg.model_dump_json())
         while True:
             raw_text = await websocket.receive_text()
             data = json.loads(raw_text)
