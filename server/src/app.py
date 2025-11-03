@@ -54,7 +54,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 async def broadcast(message: Message):
-    for connection in connections:
+    for connection in connections.copy():
         try:
             await connection.send_text(message.model_dump_json())
         except:
