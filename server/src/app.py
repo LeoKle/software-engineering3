@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 import asyncio
@@ -32,7 +33,10 @@ async def websocket_endpoint(websocket: WebSocket):
         for msg in messages:
             await websocket.send_text(f"{msg.sender}: {msg.message}")
         while True:
-            await asyncio.sleep(1)
+            raw_text = await websocket.receive_text()
+            data = json.loads(raw_text)
+            messages.append(Message(sender=data["sender"], message=data["message"]))
+            await websocket.send_text("Message received!")
     except WebSocketDisconnect:
         connections.remove(websocket)
 
