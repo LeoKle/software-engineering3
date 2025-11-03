@@ -61,7 +61,7 @@ function App() {
                 }}
             >
                 {/* REST Client */}
-                <div>
+                <div style={{ flex: 1 }}>
                     <ChatClient
                         title="REST Client"
                         messages={messages1}
@@ -76,7 +76,7 @@ function App() {
                 </div>
 
                 {/* WebSocket Client */}
-                <div>
+                <div style={{ flex: 1 }}>
                     <ChatClient
                         title="WebSocket Client"
                         messages={messages2}
