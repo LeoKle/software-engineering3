@@ -5,9 +5,13 @@ const api = axios.create({
     baseURL: "http://localhost:8000",
 });
 
+type MessagesResponse = {
+    messages: Message[];
+};
+
 export async function fetchMessages(): Promise<Message[]> {
-    const res = await api.get<Message[]>("/messages");
-    return res.data;
+    const res = await api.get<MessagesResponse>("/messages");
+    return res.data.messages;
 }
 
 export async function sendMessage(msg: Message): Promise<void> {

@@ -1,23 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import ChatClient from "./components/Client";
 import type { Message } from "./types/message";
+import { fetchMessages } from "./services/message";
+import { connectWebSocket, disconnectWebSocket } from "./services/websocket";
 
 function App() {
     const restUser: string = "Alice";
     const wsUser: string = "Alice";
 
-    const [messages1, setMessages1] = useState<Message[]>([
-        { sender: "Alice", message: "Hello!" },
-        { sender: "me", message: "Hi Alice, how are you?" },
-        { sender: "Alice", message: "I'm good, thanks!" },
-    ]);
+    const [messages1, setMessages1] = useState<Message[]>([]);
 
-    const [messages2, setMessages2] = useState<Message[]>([
-        { sender: "Bob", message: "Hey there!" },
-        { sender: "Alice", message: "Hi Bob, what's up?" },
-        { sender: "Bob", message: "Just working on a project." },
-    ]);
+    const [messages2, setMessages2] = useState<Message[]>([]);
+
+    useEffect(() => {
+        const load = async () => {
+            const data = await fetchMessages();
+            setMessages1(data);
+        };
+
+        load();
+
+        const interval = setInterval(load, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        connectWebSocket((msg) => {
+            console.log("WS message:", msg);
+            setMessages2((prev) => [...prev, msg]);
+        });
+
+        return () => disconnectWebSocket();
+    }, []);
 
     return (
         <div className="App" style={{ padding: "1rem" }}>
