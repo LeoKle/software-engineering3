@@ -1,6 +1,15 @@
 name: Pipeline
 
-on: workflow_dispatch
+on: 
+  workflow_dispatch:
+    inputs:
+      CHOICE:
+        description: "Choose pipeline outcome"
+        required: true
+        type: choice
+        options:
+          - Success
+          - Fail
 
 jobs:
   pipeline:
@@ -16,7 +25,12 @@ jobs:
             
       - name: Deploy to Staging
         run: |
-            echo "Deploying to staging"
+            if [ "${{ github.event.inputs.CHOICE }}" = "Success" ]; then
+              echo "Deploy success"
+            else
+              echo "Error: Deploy failed"
+              exit 1
+            fi
             
       - name: Deploy to Production
         run: |
