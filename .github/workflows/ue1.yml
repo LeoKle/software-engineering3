@@ -1,0 +1,39 @@
+name: Pipeline
+
+on: workflow_dispatch
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: |
+            echo "Building the project"
+            
+      - name: Test
+        run: |
+            echo "Running tests"
+            
+      - name: Deploy to Staging
+        run: |
+            echo "Deploying to staging"
+            
+      - name: Deploy to Production
+        run: |
+            echo "Deploying to production"
+            
+      - name: Always
+        if: always()
+        run: |
+            echo "Finished pipeline execution"
+            
+      - name: On Failure
+        if: failure()
+        run: |
+            echo "On Failure"
+
+      - name: On Success
+        # if: success()
+        run: |
+            echo "On Success"
+            
