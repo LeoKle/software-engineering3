@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import 'primeicons/primeicons.css';
+
 import ChatClient from "./components/Client";
 import type { Message } from "./types/message";
 import { fetchMessages, sendMessage } from "./services/message";
@@ -9,29 +11,40 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 
 function App() {
-    const [messages1, setMessages1] = useState<Message[]>([]);
-    const [messages2, setMessages2] = useState<Message[]>([]);
-
+    /* REST Client */
     const [restSender, setRestSender] = useState("REST");
+    const [restMessages, setRestMessages] = useState<Message[]>([]);
     const [restText, setRestText] = useState("");
+    const [restLoading, setRestLoading] = useState<boolean>(false);
 
+    /* WS Client */
+    const [wsMessages, setWsMessages] = useState<Message[]>([]);
     const [wsSender, setWsSender] = useState("WS");
     const [wsText, setWsText] = useState("");
 
     useEffect(() => {
-        const load = async () => {
+        let timeoutId: ReturnType<typeof setTimeout>;
+
+        const load = async (): Promise<void> => {
+            setRestLoading(true);
+
+            await new Promise<void>(res => setTimeout(res, 2000));
+
             const data = await fetchMessages();
-            setMessages1(data);
+            setRestMessages(data);
+            setRestLoading(false);
+
+            timeoutId = setTimeout(load, 2500);
         };
 
         load();
-        const interval = setInterval(load, 5000);
-        return () => clearInterval(interval);
+
+        return () => clearTimeout(timeoutId);
     }, []);
 
     useEffect(() => {
         connectWebSocket((msg) => {
-            setMessages2((prev) => [...prev, msg]);
+            setWsMessages((prev) => [...prev, msg]);
         });
         return () => disconnectWebSocket();
     }, []);
@@ -64,14 +77,14 @@ function App() {
                 <div style={{ flex: 1 }}>
                     <ChatClient
                         title="REST Client"
-                        messages={messages1}
+                        messages={restMessages}
                         currentUser={restSender}
                     />
 
                     <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                         <InputText value={restSender} onChange={(e) => setRestSender(e.target.value)} />
                         <InputText value={restText} placeholder="Message..." onChange={(e) => setRestText(e.target.value)} />
-                        <Button label="Send REST" icon="pi pi-send" onClick={handleRestSend} />
+                        <Button label="Send REST" icon={restLoading ? "pi pi-spinner" : "pi pi-send"} onClick={handleRestSend} severity={restLoading ? "warning" : "success"} />
                     </div>
                 </div>
 
@@ -79,7 +92,7 @@ function App() {
                 <div style={{ flex: 1 }}>
                     <ChatClient
                         title="WebSocket Client"
-                        messages={messages2}
+                        messages={wsMessages}
                         currentUser={wsSender}
                     />
 
